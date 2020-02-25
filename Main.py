@@ -53,3 +53,44 @@ async def _kick(ctx, user: discord.Member = None, *, arg = None):
         await ctx.send(embed=embed)
     else:
         await ctx.send("You Don't have Permissions!")
+	
+	
+def user_is_me(ctx):
+
+	return ctx.message.author.id == "381562121865003009"
+
+
+
+@client.command(name='eval', pass_context=True)
+
+@commands.check(user_is_me)
+
+async def _eval(ctx, *, command):
+
+    res = eval(command)
+
+    if inspect.isawaitable(res):
+
+        await client.say(await res)
+
+    else:
+
+    	await client.delete_message(ctx.message)
+
+    	await client.say(res)
+
+        
+
+@_eval.error
+
+async def eval_error(error, ctx):
+
+	if isinstance(error, discord.ext.commands.errors.CheckFailure):
+
+		text = "Sorry {}, You can't use this command only the bot owner can do this.".format(ctx.message.author.mention)
+
+		await client.send_message(ctx.message.channel, text)
+
+		
+
+client.run(os.environ['BOT-TOKEN'])
